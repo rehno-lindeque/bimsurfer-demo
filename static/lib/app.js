@@ -567,7 +567,6 @@
         return;
     }
     return ($.get(sampleUrl, void 0, void 0, 'json')).done(function(data, textStatus, jqXHR) {
-      console.log(data);
       try {
         return loadScene(data);
       } catch (error) {
