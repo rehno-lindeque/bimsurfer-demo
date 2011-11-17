@@ -5,7 +5,7 @@
 "use strict";
 
 (function() {
-  var bimserverImport, bimserverImportDialogClearMessages, bimserverImportDialogLoad, bimserverImportDialogLogin, bimserverImportDialogRefresh, bimserverImportDialogSelect, bimserverImportDialogShow, bimserverImportDialogShowTab1, bimserverImportDialogShowTab2, bimserverImportDialogToggleTab2, canvasCaptureThumbnail, canvasInit, constants, controlsInit, controlsNavigateLink, controlsPropertiesSelectObject, controlsShowProperties, controlsToggleLayer, controlsToggleTreeOpen, controlsToggleTreeVisibility, controlsTreeSelectObject, fileImportDialogLoad, fileImportDialogShow, helpShortcuts, helpShortcutsHide, helpStatus, helpStatusClear, hideDialog, ifcTreeInit, keyDown, lerpLookAt, lerpLookAtNode, loadScene, lookAtNodePanRelative, lookAtPanRelative, lookAtToQuaternion, mainmenuViewsReset, modifySubAttr, mouseCoordsWithinElement, mouseDown, mouseMove, mouseUp, mouseWheel, orbitLookAt, orbitLookAtNode, recordToVec3, recordToVec4, registerControlEvents, registerDOMEvents, sceneInit, snapshotsDelete, snapshotsPlay, snapshotsPush, snapshotsToggle, state, topmenuHelp, topmenuImportBimserver, topmenuImportSceneJS, topmenuModeAdvanced, topmenuModeBasic, topmenuPerformancePerformance, topmenuPerformanceQuality, vec3ToRecord, vec4ToRecord, viewportInit, windowResize, zoomLookAt, zoomLookAtNode;
+  var bimserverImport, bimserverImportDialogClearMessages, bimserverImportDialogLoad, bimserverImportDialogLogin, bimserverImportDialogRefresh, bimserverImportDialogSelect, bimserverImportDialogShow, bimserverImportDialogShowTab1, bimserverImportDialogShowTab2, bimserverImportDialogToggleTab2, canvasCaptureThumbnail, canvasInit, constants, controlsInit, controlsNavigateLink, controlsPropertiesSelectObject, controlsShowProperties, controlsToggleLayer, controlsToggleTreeOpen, controlsToggleTreeVisibility, controlsTreeSelectObject, fileImportDialogLoad, fileImportDialogShow, helpShortcuts, helpShortcutsHide, helpStatus, helpStatusClear, hideDialog, ifcTreeInit, keyDown, lerpLookAt, lerpLookAtNode, loadScene, lookAtNodePanRelative, lookAtPanRelative, lookAtToQuaternion, mainmenuViewsReset, modifySubAttr, mouseCoordsWithinElement, mouseDown, mouseMove, mouseUp, mouseWheel, orbitLookAt, orbitLookAtNode, recordToVec3, recordToVec4, registerControlEvents, registerDOMEvents, sceneInit, snapshotsDelete, snapshotsPlay, snapshotsPush, snapshotsToggle, state, topmenuHelp, topmenuImportBimserver, topmenuImportSample, topmenuImportSceneJS, topmenuModeAdvanced, topmenuModeBasic, topmenuPerformancePerformance, topmenuPerformanceQuality, vec3ToRecord, vec4ToRecord, viewportInit, windowResize, zoomLookAt, zoomLookAtNode;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -554,6 +554,33 @@
   topmenuImportSceneJS = function(event) {
     return fileImportDialogShow();
   };
+  topmenuImportSample = function(event) {
+    var sampleUrl;
+    switch (event.target.id) {
+      case 'top-menu-import-sample-1':
+        sampleUrl = "http://bimserver.github.com/bimsurfer-demo/static/models/Vogel-Gesamt.json";
+        break;
+      case 'top-menu-import-sample-2':
+        sampleUrl = "http://bimserver.github.com/bimsurfer-demo/static/models/AC11-FZK-Haus.json";
+        break;
+      default:
+        return;
+    }
+    return ($.get(sampleUrl, void 0, void 0, 'json')).done(function(data, textStatus, jqXHR) {
+      console.log(data);
+      try {
+        return loadScene(data);
+      } catch (error) {
+        return typeof console !== "undefined" && console !== null ? typeof console.log === "function" ? console.log(error) : void 0 : void 0;
+      }
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+      if (typeof console !== "undefined" && console !== null) {
+        if (typeof console.log === "function") {
+          console.log(textStatus);
+        }
+      }
+    });
+  };
   topmenuPerformanceQuality = function(event) {
     ($(event.target)).addClass('top-menu-activated');
     ($('#top-menu-performance-performance')).removeClass('top-menu-activated');
@@ -933,19 +960,8 @@
       url += '/';
     }
     ($('#bimserver-import-message-info')).html("Sending login request...");
-    ($.ajax({
-      username: encodeURIComponent(user),
-      password: encodeURIComponent(pwd),
-      url: url + 'login.jsp',
-      data: 'username=' + (encodeURIComponent(user)) + '&password=' + (encodeURIComponent(pwd))
-    })).done(function(data, textStatus, jqXHR) {
-      return ($('#bimserver-import-message-info')).html("Login request succeeded", bimserverImportDialogShowTab2(), bimserverImportDialogRefresh());
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-      ($('#bimserver-import-message-info')).html("");
-      return ($('#bimserver-import-message-error')).html("Login request failed");
-    }).always(function(jqXHR, textStatus, errorThrown) {
-      return ($('#dialog-tab-bimserver1 input, #dialog-tab-bimserver1 button')).removeAttr('disabled');
-    });
+    bimserverImportDialogShowTab2();
+    bimserverImportDialogRefresh();
     pwd = null;
     return true;
   };
@@ -1037,6 +1053,7 @@
     ($('#bimserver-projects')).delegate('li', 'click', bimserverImportDialogSelect);
     ($('#top-menu-import-bimserver')).click(topmenuImportBimserver);
     ($('#top-menu-import-scenejs')).click(topmenuImportSceneJS);
+    ($('#top-menu-import-sample-1,#top-menu-import-sample-2')).click(topmenuImportSample);
     ($('#top-menu-performance-quality')).click(topmenuPerformanceQuality);
     ($('#top-menu-performance-performance')).click(topmenuPerformancePerformance);
     ($('#top-menu-mode-basic')).click(topmenuModeBasic);
